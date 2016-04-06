@@ -18,8 +18,8 @@ Units can accelerate/decelerate in the direction they are facing, as well as tur
 ![Screenshot](https://raw.githubusercontent.com/swaparcher/swaparcher.github.io/master/img/screenshots/ZeroG.jpg)
 
 Different shapes (types of units) have different max speeds and turn rates.
-The black line denotes the direction the unit is facing.
-The green arrow represents the velocity.
-The purple arrow represents the acceleration.
-The yellow line represents an movement order.
-The shaded yellow circle represents the area the unit needs to start decelerating to come to a complete halt.
+- The black line denotes the direction the unit is facing.
+- The green arrow represents the velocity.
+- The purple arrow represents the acceleration.
+- The yellow line represents an movement order.
+- The shaded yellow circle represents the area the unit needs to start decelerating to come to a complete halt.
