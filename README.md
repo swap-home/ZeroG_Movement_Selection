@@ -15,4 +15,4 @@ The selection system should be familiar to any RTS player:
 The movement system is implemented similar to the classic arcade game Asteroids:
 Units can accelerate/decelerate in the direction they are facing, as well as turn.
 
-![Screenshot](https://raw.githubusercontent.com/swaparcher/swaparcher.github.io/master/img/screenshots/ZeroG.jpg|alt=screenshot)
+![Screenshot](https://raw.githubusercontent.com/swaparcher/swaparcher.github.io/master/img/screenshots/ZeroG.jpg)
