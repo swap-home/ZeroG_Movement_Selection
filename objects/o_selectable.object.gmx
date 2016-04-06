@@ -79,24 +79,6 @@ event_inherited();
           <argument>
             <kind>1</kind>
             <string>focus = false;
-if (global.selection_controller.click_x != mouse_x &amp;&amp; global.selection_controller.click_y != mouse_y) //dragging a box
-{
-    if(!keyboard_check_direct(vk_lshift))
-    {
-        clearSelection();
-    }
-    
-    with(o_selectable)
-    {
-        if (collision_rectangle(global.selection_controller.click_x, global.selection_controller.click_y, mouse_x, mouse_y, id, false, false))
-        {
-            if (global.playerside == side)
-            {
-                addSelection(id);
-            }
-        }
-    }
-}
 </string>
           </argument>
         </arguments>

@@ -50,6 +50,7 @@ click_y = 0;
 click_down = false;
 click_double = false;
 
+formation = FORMATION_LINE;
 unit_separation = 48;
 separation_angle = 90; // 115, 45
 </string>
@@ -110,6 +111,39 @@ global.selection_controller = 0;
         </arguments>
       </action>
     </event>
+    <event eventtype="5" enumb="83">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (!ds_list_empty(selection))
+{
+    for (var i = 0; i &lt; ds_list_size(selection); i++)
+    {
+        var unitId = ds_list_find_value(selection, i);
+        if (unitId.side == global.playerside)
+        {
+            stop(unitId);
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="6" enumb="56">
       <action>
         <libid>1</libid>
@@ -130,6 +164,25 @@ global.selection_controller = 0;
             <string>click_down = false;
 click_double = true;
 alarm[0] = double_click_timeout;
+
+if (click_x != mouse_x &amp;&amp; click_y != mouse_y) //dragging a box
+{
+    if(!keyboard_check_direct(vk_lshift))
+    {
+        clearSelection();
+    }
+    
+    with(o_selectable)
+    {
+        if (collision_rectangle(global.selection_controller.click_x, global.selection_controller.click_y, mouse_x, mouse_y, id, false, false))
+        {
+            if (global.playerside == side)
+            {
+                addSelection(id);
+            }
+        }
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -194,7 +247,7 @@ alarm[0] = double_click_timeout;
         var centroid_x = unitId.x;
         var centroid_y = unitId.y;
         var group_direction = point_direction(centroid_x, centroid_y, mouse_x, mouse_y);
-        var position = 2; // TODO: Combine with i below?
+        var position = 2;
         // Now to order units to move to the left/right of the leading unit
         // Line Formation looks like
         //      3                    2
@@ -203,30 +256,30 @@ alarm[0] = double_click_timeout;
         for (var i = 1; i &lt; ds_list_size(selection); i++)
         {
             var unitId = ds_list_find_value(selection, i);
-            if (unitId.side == global.playerside)
-            {
-                if (position mod 2 == 1) 
+            if (instance_exists(unitId)) {
+                if (unitId.side == global.playerside)
                 {
-                    var right_position = (position - 1)/2;
-                    var right_direction = group_direction - separation_angle;
-                    var right_x = mouse_x + unit_separation * right_position * cos(degtorad(right_direction));
-                    var right_y = mouse_y - unit_separation * right_position * sin(degtorad(right_direction));
-                    // TODO: Use unit specific separations? may look weird if not homogenous though
-                    moveTo(unitId, right_x, right_y);
-                } 
-                else 
-                {
-                    var left_position = position/2;
-                    var left_direction = group_direction + separation_angle;
-                    var left_x = mouse_x + unit_separation * left_position * cos(degtorad(left_direction));
-                    var left_y = mouse_y - unit_separation * left_position * sin(degtorad(left_direction));
-                    trace(left_direction, degtorad(left_direction), cos(degtorad(left_direction)));
-trace(mouse_x, mouse_y, left_x, left_y);
-                    // TODO: Use unit specific separations? may look weird if not homogenous though
-                    moveTo(unitId, left_x, left_y);
+                    if (position mod 2 == 1) 
+                    {
+                        var right_position = (position - 1)/2;
+                        var right_direction = group_direction - separation_angle;
+                        var right_x = mouse_x + unit_separation * right_position * cos(degtorad(right_direction));
+                        var right_y = mouse_y - unit_separation * right_position * sin(degtorad(right_direction));
+                        // TODO: Use unit specific separations? may look weird if not homogenous though
+                        moveTo(unitId, right_x, right_y);
+                    } 
+                    else 
+                    {
+                        var left_position = position/2;
+                        var left_direction = group_direction + separation_angle;
+                        var left_x = mouse_x + unit_separation * left_position * cos(degtorad(left_direction));
+                        var left_y = mouse_y - unit_separation * left_position * sin(degtorad(left_direction));
+                        // TODO: Use unit specific separations? may look weird if not homogenous though
+                        moveTo(unitId, left_x, left_y);
+                    }
                 }
+                position++;
             }
-            position++;
         }
     }
 }
@@ -291,8 +344,29 @@ if (click_down)
     draw_rectangle(click_x, click_y, mouse_x, mouse_y, true);
 }
 
+draw_set_alpha(1);
+draw_set_color(c_black);
+draw_set_font(Arial28);
+
+var formation_string = "ERROR";
+switch(formation) {
+    case FORMATION_LINE: 
+        formation_string = "LINE";
+        break;
+    case FORMATION_ARROWHEAD:
+        formation_string = "ARROWHEAD";
+        break;
+    case FORMATION_TRIDENT:
+        formation_string = "TRIDENT";
+        break;
+}
+draw_set_halign(fa_center);
+draw_text(room_width/2, room_height/2, "Press Space to switch formations#Current formation is: " + formation_string);
+
 draw_set_color(oldColor);
 draw_set_alpha(oldAlpha);
+
+
 </string>
           </argument>
         </arguments>
@@ -523,6 +597,43 @@ draw_set_alpha(oldAlpha);
           <argument>
             <kind>1</kind>
             <string>controlGroupKey(0);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="32">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (++formation == FORMATION_MAX)
+{
+    formation = FORMATION_LINE;
+}
+switch(formation) {
+    case FORMATION_LINE:
+        separation_angle = 90;
+        break;
+    case FORMATION_ARROWHEAD:
+        separation_angle = 115;
+        break;
+    case FORMATION_TRIDENT:
+        separation_angle = 45;
+        break;
+}
 </string>
           </argument>
         </arguments>

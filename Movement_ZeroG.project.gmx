@@ -26,6 +26,7 @@
       <script>scripts\attackTarget.gml</script>
       <script>scripts\moveTo.gml</script>
       <script>scripts\turnTowards.gml</script>
+      <script>scripts\stop.gml</script>
     </scripts>
     <script>scripts\mod360.gml</script>
     <script>scripts\withinDegrees.gml</script>
@@ -33,6 +34,9 @@
       <script>scripts\trace.gml</script>
     </scripts>
   </scripts>
+  <fonts name="fonts">
+    <font>fonts\Arial28</font>
+  </fonts>
   <objects name="objects">
     <objects name="units">
       <object>objects\o_unit</object>
@@ -50,6 +54,12 @@
     <room>rooms\titleRoom</room>
     <room>rooms\room0</room>
   </rooms>
+  <constants number="4">
+    <constant name="FORMATION_LINE">0</constant>
+    <constant name="FORMATION_ARROWHEAD">1</constant>
+    <constant name="FORMATION_TRIDENT">2</constant>
+    <constant name="FORMATION_MAX">3</constant>
+  </constants>
   <help>
     <rtf>help.rtf</rtf>
   </help>
